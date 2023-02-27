@@ -5,20 +5,27 @@
   "main": "index.js",
   "scripts": {
     "start": "node app.js",
+    "live": "nodemon app.js",
     "test": "node tests/test.js"
   },
   "dependencies": {
     "body-parser": "latest",
+    "cloudcmd": "^16.13.1",
     "connect-busboy": "latest",
     "cron-parser": "latest",
     "cronstrue": "latest",
     "ejs": "latest",
     "express": "latest",
-    "express-basic-auth": "^1.2.0",
+    "express-basic-auth": "^1.2.1",
+    "gritty": "^7.1.0",
     "mime-types": "latest",
     "moment": "latest",
     "nedb": "latest",
-    "nodemailer": "^6.7.3"
+    "nodemailer": "^6.9.1",
+    "socket.io": "^4.6.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
   },
   "engines": {
     "node": ">=15.0.0"

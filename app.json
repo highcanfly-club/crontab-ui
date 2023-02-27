@@ -1,7 +1,6 @@
 {
   "name": "Crontab UI",
   "description": "Easy and safe way to manage your crontab file",
-  "repository": "https://github.com/alseambusher/crontab-ui",
-  "logo": "http://node-js-sample.herokuapp.com/node.svg",
+  "repository": "https://github.com/highcanfly-club/crontab-ui",
   "keywords": ["Crontab", "node"]
 }

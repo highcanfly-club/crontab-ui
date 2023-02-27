@@ -3,7 +3,13 @@ version: '3.7'
 services:
   crontab-ui:
     build: .
-    image: alseambusher/crontab-ui
-    network_mode: bridge
+    image: highcanfly/crontab-ui:latest
     ports:
       - 8000:8000
+    volumes:
+    - cron-data:/opt/cron
+    environment:
+       BASIC_AUTH_USER: ${BASIC_AUTH_USER}
+       BASIC_AUTH_PWD: ${BASIC_AUTH_PWD}
+volumes:
+  cron-data:

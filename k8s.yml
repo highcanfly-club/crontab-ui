@@ -1,0 +1,123 @@
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: crontabui
+  namespace: $OKTETO_NS
+  labels:
+    app.kubernetes.io/name: crontabui
+    app.kubernetes.io/instance: crontabui
+type: Opaque
+stringData:
+  crontabui-user: $BASIC_AUTH_USER
+  crontabui-password: $BASIC_AUTH_PWD
+  
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  creationTimestamp: null
+  labels:
+    io.kompose.service: crontabui-data
+  name: crontabui-data
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  volumeMode: Filesystem
+status: {}
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    io.kompose.service: crontabui
+  name: crontabui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: crontabui
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.network/hcf-default: "true"
+        io.kompose.service: crontabui
+    spec:
+      containers:
+        - env:
+            - name: BASIC_AUTH_USER
+              valueFrom:
+                secretKeyRef:
+                  name: crontabui
+                  key: crontabui-user
+            - name: BASIC_AUTH_PWD
+              valueFrom:
+                secretKeyRef:
+                  name: crontabui
+                  key: crontabui-password
+          image: highcanfly/crontab-ui
+          name: crontabui
+          ports:
+            - containerPort: 8000
+          resources:
+            limits:
+              cpu: 250m
+              memory: "214748364"
+          volumeMounts:
+            - mountPath: /opt/cron
+              name: crontabui-data
+          securityContext:
+            runAsUser: 0
+            runAsGroup: 0
+      restartPolicy: Always
+      volumes:
+        - name: crontabui-data
+          persistentVolumeClaim:
+            claimName: crontabui-data
+status: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    io.kompose.service: crontabui
+  name: crontabui
+spec:
+  ports:
+    - name: "8000"
+      port: 8000
+      targetPort: 8000
+  selector:
+    io.kompose.service: crontabui
+status:
+  loadBalancer: {}
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: crontabui
+  namespace: $OKTETO_NS
+spec:
+  rules:
+  - host: crontabui-$OKTETO_NS.cloud.okteto.net
+    http:
+      paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: crontabui
+              port:
+                number: 8000
+

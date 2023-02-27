@@ -2,3 +2,4 @@
 node_modules
 crontabs/*.db
 crontabs/logs/*.log
+.vscode

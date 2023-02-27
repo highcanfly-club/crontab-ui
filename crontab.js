@@ -262,7 +262,8 @@ exports.get_env = function(){
 };
 
 exports.import_crontab = function(){
-	exec("crontab -l", function(error, stdout, stderr){
+		const croncmd = `crontab -c ${process.env.CRON_PATH} -l`;                                                                    
+        exec(croncmd, function(error, stdout, stderr){
 		var lines = stdout.split("\n");
 		var namePrefix = new Date().getTime();
 

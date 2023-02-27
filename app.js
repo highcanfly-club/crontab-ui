@@ -1,4 +1,8 @@
 /*jshint esversion: 6*/
+var cloudcmd = require('cloudcmd');
+var socketIo = require('socket.io')
+const Server = socketIo.Server
+const CloudcmdPrefix = "/cloudcmd/"
 var express = require('express');
 var app = express();
 var crontab = require("./crontab");
@@ -34,7 +38,6 @@ if (BASIC_AUTH_USER && BASIC_AUTH_PWD) {
         }
     }))
 }
-
 // ssl credentials
 var credentials = {
   key: process.env.SSL_KEY ? fs.readFileSync(process.env.SSL_KEY) : '',
@@ -73,7 +76,7 @@ app.use(base_url, express.static(__dirname + '/config'));
 app.set('views', __dirname + '/views');
 
 // set host to 127.0.0.1 or the value set by environment var HOST
-app.set('host', (process.env.HOST || '127.0.0.1'));
+app.set('host', (process.env.HOST || '0.0.0.0'));
 
 // set port to 8000 or the value set by environment var PORT
 app.set('port', (process.env.PORT || 8000));
@@ -259,6 +262,53 @@ process.on('SIGTERM', function() {
 
 var server = startHttpsServer ?
   https.createServer(credentials, app) : http.createServer(app);
+
+// Cloudcmd
+const socket = new Server(server, {
+    path: `${CloudcmdPrefix}socket.io`
+});
+
+const config = {
+    name: 'Cloud Commander',
+	oneFilePanel: true,
+	online:true,
+	contact: false,
+	vim: true,
+	root: '/opt/cron',
+	configAuth: false,
+	terminal: false,
+	syncConsolePath:true
+};
+
+const filePicker = {
+    data: {
+        FilePicker: {
+            key: 'key',
+        },
+    },
+};
+
+// override option from json/modules.json
+const modules = {
+    filePicker,
+};
+
+const {
+    createConfigManager,
+    configPath,
+} = cloudcmd;
+
+const configManager = createConfigManager({
+    configPath,
+});
+
+app.use(CloudcmdPrefix, cloudcmd({
+    socket, // used by Config, Edit (optional) and Console (required)
+    config, // config data (optional)
+    modules, // optional
+    configManager, // optional
+}));
+// /Cloudcmd
 
 server.listen(app.get('port'), app.get('host'), function() {
   console.log("Node version:", process.versions.node);
