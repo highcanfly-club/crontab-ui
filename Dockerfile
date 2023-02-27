@@ -25,6 +25,8 @@ RUN   npm install
 
 COPY  docker-entrypoint.sh /
 RUN   chmod +x /docker-entrypoint.sh
+COPY  run-with-env /usr/local/bin/run-with-env
+RUN   chmod +x /usr/local/bin/run-with-env
 ENV   CRON_DB_PATH /opt/cron/db
 ENV   CRONTABS /opt/cron/crontabs
 
