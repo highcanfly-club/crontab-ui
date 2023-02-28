@@ -63,7 +63,7 @@ spec:
                 secretKeyRef:
                   name: crontabui
                   key: crontabui-password
-          image: highcanfly/crontab-ui
+          image: highcanfly/crontab-ui:latest
           name: crontabui
           ports:
             - containerPort: 8000
