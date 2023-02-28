@@ -1,0 +1,6 @@
+# Only the paths listed in the file will be downloaded when performing a
+# partial clone using `--filter=sparse:oid=helm/.helmfilter`
+
+# Explicitly include filterspec needed to configure sparse checkout with
+# git config --local core.sparsecheckout true
+helm/crontab-ui
