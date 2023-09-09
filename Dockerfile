@@ -1,5 +1,5 @@
 # docker run -d -p 8000:8000 alseambusher/crontab-ui
-FROM alpine/k8s:1.23.16
+FROM alpine/k8s:1.25.13
 
 ENV   CRON_PATH /opt/cron/crontabs
 
@@ -29,6 +29,7 @@ COPY  run-with-env /usr/local/bin/run-with-env
 RUN   chmod +x /usr/local/bin/run-with-env
 ENV   CRON_DB_PATH /opt/cron/db
 ENV   CRONTABS /opt/cron/crontabs
+RUN   curl https://get.okteto.com -sSfL | sh
 
 ENV   HOST 0.0.0.0
 ENV   PORT 8000
