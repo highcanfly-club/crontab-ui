@@ -10,21 +10,8 @@
 name: Publish amd64/arm64 to docker Hub
 
 on:
-  workflow_dispatch:
-    inputs:
-      logLevel:
-        description: 'Log level'
-        required: true
-        default: 'warning'
-        type: choice
-        options:
-        - info
-        - warning
-        - debug
-      tags:
-        description: 'mutliarch'
-        required: false
-        type: boolean
+  release:
+    types: [published]
 
 jobs:
   push_to_registry:
