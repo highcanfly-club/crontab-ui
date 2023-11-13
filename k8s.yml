@@ -63,14 +63,18 @@ spec:
                 secretKeyRef:
                   name: crontabui
                   key: crontabui-password
-          image: highcanfly/crontab-ui:latest
+            - name: UPDATED                      
+              value: "$TIMESTAMP" 
+            - name: CLUSTERS_FILE
+              value: /opt/cron/k8s/clusters.json
+          image: highcanfly/crontab-ui
           name: crontabui
           ports:
             - containerPort: 8000
           resources:
             limits:
               cpu: 250m
-              memory: "214748364"
+              memory: "1Gi"
           volumeMounts:
             - mountPath: /opt/cron
               name: crontabui-data
