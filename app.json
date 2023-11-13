@@ -1,5 +1,5 @@
 {
-  "name": "Crontab UI",
+  "name": "Crontab UI for Kubernetes",
   "description": "Easy and safe way to manage your crontab file",
   "repository": "https://github.com/highcanfly-club/crontab-ui",
   "keywords": ["Crontab", "node"]
