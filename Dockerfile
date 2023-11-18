@@ -24,7 +24,7 @@ RUN   apk --no-cache add shadow gcc g++ make \
       curl \
       git \
       zsh \
-      dropbear
+      openssh
 
 COPY supervisord.conf /etc/supervisord.conf
 COPY . /crontab-ui

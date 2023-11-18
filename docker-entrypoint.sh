@@ -26,11 +26,20 @@ fi
 if [ ! -d "/opt/cron/.ssh" ]; then
     mkdir /opt/cron/.ssh
 fi
-chmod 0600 /opt/cron/.ssh
-if [ ! -d "/opt/cron/dropbear" ]; then
-  mkdir /opt/cron/dropbear
-  /usr/bin/dropbearkey -t ecdsa -f /opt/cron/dropbear/dropbear_ecdsa_host_key
-  /usr/bin/dropbearkey -t rsa -f /opt/cron/dropbear/dropbear_rsa_host_key
-  /usr/bin/dropbearkey -t ed25519 -f /opt/cron/dropbear/dropbear_ed25519_host_key
+chmod 0700 /opt/cron/.ssh
+# if [ ! -d "/opt/cron/dropbear" ]; then
+#   mkdir /opt/cron/dropbear
+#   /usr/bin/dropbearkey -t ecdsa -f /opt/cron/dropbear/dropbear_ecdsa_host_key
+#   /usr/bin/dropbearkey -t rsa -f /opt/cron/dropbear/dropbear_rsa_host_key
+#   /usr/bin/dropbearkey -t ed25519 -f /opt/cron/dropbear/dropbear_ed25519_host_key
+# fi
+if [ ! -d "/opt/cron/ssh" ]; then
+    mkdir /opt/cron/ssh
+    echo -e 'y\n'|ssh-keygen -q -t rsa -f /opt/cron/ssh/ssh_host_rsa_key -C "" -N ""
+    echo -e 'y\n'|ssh-keygen -q -t dsa -f /opt/cron/ssh/ssh_host_dsa_key -C "" -N ""
+    echo -e 'y\n'|ssh-keygen -q -t ecdsa -f /opt/cron/ssh/ssh_host_ecdsa_key -C "" -N ""
+    echo -e 'y\n'|ssh-keygen -q -t ed25519 -f /opt/cron/ssh/ssh_host_ed25519_key -C "" -N ""
+else
+    echo "ssh key exists"
 fi
 supervisord -c /etc/supervisord.conf
