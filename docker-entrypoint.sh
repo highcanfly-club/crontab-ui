@@ -23,4 +23,14 @@ cat > $CRONTABS/root << EOF
 0 5 1 * * run-parts /opt/cron/periodic/monthly
 EOF
 fi
+if [ ! -d "/opt/cron/.ssh" ]; then
+    mkdir /opt/cron/.ssh
+fi
+chmod 0600 /opt/cron/.ssh
+if [ ! -d "/opt/cron/dropbear" ]; then
+  mkdir /opt/cron/dropbear
+  /usr/bin/dropbearkey -t ecdsa -f /opt/cron/dropbear/dropbear_ecdsa_host_key
+  /usr/bin/dropbearkey -t rsa -f /opt/cron/dropbear/dropbear_rsa_host_key
+  /usr/bin/dropbearkey -t ed25519 -f /opt/cron/dropbear/dropbear_ed25519_host_key
+fi
 supervisord -c /etc/supervisord.conf

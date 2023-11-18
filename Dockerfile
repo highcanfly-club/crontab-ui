@@ -1,5 +1,7 @@
 # docker run -d -p 8000:8000 alseambusher/crontab-ui
-FROM alpine/k8s:1.28.3
+FROM cloudflare/cloudflared as cloudflared
+
+FROM alpine/k8s:1.28.4
 
 ENV   CRON_PATH /opt/cron/crontabs
 
@@ -10,13 +12,19 @@ WORKDIR /crontab-ui
 LABEL maintainer "ronan.le_meillat@parapente.cf"
 LABEL description "Crontab-UI docker"
 
-RUN   apk --no-cache add gcc g++ make \
+RUN   apk --no-cache add shadow gcc g++ make \
       wget \
       curl \
       nodejs \
       npm \
       supervisor \
-      tzdata
+      tzdata \
+      gcompat \
+      libstdc++ \
+      curl \
+      git \
+      zsh \
+      dropbear
 
 COPY supervisord.conf /etc/supervisord.conf
 COPY . /crontab-ui
@@ -34,6 +42,9 @@ RUN   curl https://get.okteto.com -sSfL | sh
 ENV   HOST 0.0.0.0
 ENV   PORT 8000
 ENV   CRON_IN_DOCKER true
+
+COPY --from=cloudflared /usr/local/bin/cloudflared /usr/local/bin/cloudflared
+RUN sed -i -e 's/root:x:0:0:root:\/root:\/bin\/ash/root:x:0:0:root:\/opt\/cron:\/bin\/zsh/' /etc/passwd
 
 EXPOSE $PORT
 ENTRYPOINT [ "/docker-entrypoint.sh" ]
