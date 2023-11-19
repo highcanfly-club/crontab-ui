@@ -44,6 +44,9 @@ ENV   CRON_IN_DOCKER true
 
 COPY --from=cloudflared /usr/local/bin/cloudflared /usr/local/bin/cloudflared
 RUN sed -i -e 's/root:x:0:0:root:\/root:\/bin\/ash/root:x:0:0:root:\/opt\/cron:\/bin\/zsh/' /etc/passwd
+RUN sed -i -e 's/^AllowTcpForwarding no$/AllowTcpForwarding yes/'\
+       -e 's/^GatewayPorts no$/GatewayPorts yes/' \
+       -e 's/^.*PermitTunnel no$/PermitTunnel yes/' /etc/ssh/sshd_config
 COPY supervisord.conf /etc/supervisord.conf
 
 EXPOSE $PORT
