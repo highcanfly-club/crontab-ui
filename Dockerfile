@@ -33,6 +33,9 @@ RUN   apt-get update -y && DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt install
       git \
       zsh \
       vim \
+      jq \
+      cron \
+      gettext \
       openssh-server openssh-client
       
 ENV NPM_CONFIG_LOGLEVEL info
@@ -92,11 +95,12 @@ RUN sed -i -e 's/^AllowTcpForwarding no$/AllowTcpForwarding yes/'\
 
 RUN curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash - \ 
       && curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/$(dpkg --print-architecture)/kubectl" \
-      && chmod +x kubectl && mv kubectl /usr/local/bin/kubectl
+      && chmod +x kubectl && mv kubectl /usr/bin/kubectl
 COPY supervisord.conf /etc/supervisord.conf
 
 COPY --from=dcronbuilder /dcron/crond /usr/sbin/crond
 RUN mkdir -p /etc/cron.d && chown -R 1001 /etc/cron.d && chmod 0755 /usr/sbin/crond
+RUN rm -f /usr/sbin/cron
 
 EXPOSE $PORT
 ENTRYPOINT [ "/docker-entrypoint.sh" ]
