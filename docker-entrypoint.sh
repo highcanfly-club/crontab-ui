@@ -43,4 +43,16 @@ else
     echo "ssh key exists, we are correcting the modes"
     chmod 0600 /opt/cron/ssh/*
 fi
+
+if [ -d "/etc/cloudflared/creds/credentials.json" ]; then
+cat << EOF >> /etc/supervisord.conf
+
+[program:cloudflared]                                                                                                                                                                         
+command=/usr/local/bin/cloudflared tunnel --config /etc/cloudflared/config/config.yaml --origincert=/etc/cloudflared/config/cert.pem run                                                                     
+autorestart=true               
+startsecs=5                                                                                                                                                                                   
+stdout_logfile=NONE                                                                                                                                                                           
+stderr_logfile=NONE 
+EOF
+fi
 supervisord -c /etc/supervisord.conf
