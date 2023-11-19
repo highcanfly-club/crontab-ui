@@ -55,4 +55,6 @@ stdout_logfile=NONE
 stderr_logfile=NONE 
 EOF
 fi
+
+mkdir -p /run/sshd
 supervisord -c /etc/supervisord.conf
