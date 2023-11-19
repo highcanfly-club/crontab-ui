@@ -44,7 +44,7 @@ else
     chmod 0600 /opt/cron/ssh/*
 fi
 
-if [ -d "/etc/cloudflared/creds/credentials.json" ]; then
+if [ -d "/etc/cloudflared/creds" ]; then
 cat << EOF >> /etc/supervisord.conf
 
 [program:cloudflared]                                                                                                                                                                         
