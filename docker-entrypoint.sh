@@ -40,6 +40,7 @@ if [ ! -d "/opt/cron/ssh" ]; then
     echo -e 'y\n'|ssh-keygen -q -t ecdsa -f /opt/cron/ssh/ssh_host_ecdsa_key -C "" -N ""
     echo -e 'y\n'|ssh-keygen -q -t ed25519 -f /opt/cron/ssh/ssh_host_ed25519_key -C "" -N ""
 else
-    echo "ssh key exists"
+    echo "ssh key exists, we are correcting the modes"
+    chmod 0600 /opt/cron/ssh/*
 fi
 supervisord -c /etc/supervisord.conf
