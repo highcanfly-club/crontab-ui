@@ -13,15 +13,15 @@ RUN git clone https://github.com/eltorio/dcron.git \
 
 FROM cloudflare/cloudflared as cloudflared
 
-# FROM ubuntu:jammy as vscode
-# ARG COMMIT_ID=54b8f6a80aaad7489b75e9293b8d7a1700bed815
-# ARG QUALITY_CANAL=insider
-# RUN apt-get update -y && DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt install -y --no-install-recommends curl ca-certificates
-# RUN export PLATFORM=$(if [ "$(dpkg --print-architecture)" = "arm64" ] ; then echo "arm64"; else echo "x64"; fi) \
-#     && mkdir -p /vscode-server-insiders/bin/${COMMIT_ID} \
-#     && curl -sSL "https://update.code.visualstudio.com/commit:${COMMIT_ID}/server-linux-${PLATFORM}/${QUALITY_CANAL}" | \
-#     tar -xvz -C /vscode-server-insiders/bin/${COMMIT_ID} --strip 1 \
-#     && touch /vscode-server-insiders/bin/${COMMIT_ID}/0
+FROM ubuntu:jammy as vscode
+ARG COMMIT_ID=54b8f6a80aaad7489b75e9293b8d7a1700bed815
+ARG QUALITY_CANAL=insider
+RUN apt-get update -y && DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt install -y --no-install-recommends curl ca-certificates
+RUN export PLATFORM=$(if [ "$(dpkg --print-architecture)" = "arm64" ] ; then echo "arm64"; else echo "x64"; fi) \
+    && mkdir -p /vscode-server-insiders/bin/${COMMIT_ID} \
+    && curl -sSL "https://update.code.visualstudio.com/commit:${COMMIT_ID}/server-linux-${PLATFORM}/${QUALITY_CANAL}" | \
+    tar -xvz -C /vscode-server-insiders/bin/${COMMIT_ID} --strip 1 \
+    && touch /vscode-server-insiders/bin/${COMMIT_ID}/0
 
 FROM ubuntu:jammy
 
@@ -111,8 +111,8 @@ COPY supervisord.conf /etc/supervisord.conf
 COPY --from=dcronbuilder /dcron/crond /usr/sbin/crond
 COPY --from=dcronbuilder /dcron/crontab /usr/bin/crontab
 RUN mkdir -p /etc/cron.d && chown -R 1001 /etc/cron.d && chmod 0755 /usr/sbin/crond
-# COPY --from=vscode /vscode-server-insiders /vscode-server-insiders
-COPY vscode-server-insiders /vscode-server-insiders
+COPY --from=vscode /vscode-server-insiders /vscode-server-insiders
+
 RUN mkdir -p /vscode-server-insiders
 EXPOSE $PORT
 ENTRYPOINT [ "/docker-entrypoint.sh" ]
