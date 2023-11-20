@@ -4,3 +4,4 @@ crontabs/*.db
 crontabs/logs/*.log
 .vscode
 _sensitive_datas/_sensitive_datas.tar.xz
+.DS_Store
