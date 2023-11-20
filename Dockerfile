@@ -5,6 +5,7 @@ ARG VSCODE_COMMIT_ID=e0b9ba5710060c8a8014f8a12980f011d81fb844
 ARG QUALITY_CANAL=insider
 ARG QUALITY_CANAL_PRETTY=Insiders
 ARG VSCODE_CLI_FULL_NAME=code-insiders
+ARG VSCODE_SERVER_FULL_NAME=code-server-insiders
 ARG QUALITY_CANAL_FULL_NAME=vscode-server-insiders
 
 FROM ubuntu:jammy as dcronbuilder
@@ -17,7 +18,6 @@ RUN git clone https://github.com/eltorio/dcron.git \
     && cd dcron \
     && make CRONTAB_GROUP=daemon CRONTABS=/opt/cron/crontabs CRONSTAMPS=/opt/cron/cronstamps
 
-
 FROM cloudflare/cloudflared as cloudflared
 
 FROM ubuntu:jammy as vscode
@@ -28,6 +28,7 @@ ARG QUALITY_CANAL
 ARG QUALITY_CANAL_FULL_NAME
 ARG QUALITY_CANAL_PRETTY
 ARG VSCODE_CLI_FULL_NAME
+ARG VSCODE_SERVER_FULL_NAME
 RUN apt-get update -y && DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt install -y --no-install-recommends curl ca-certificates
 RUN export PLATFORM=$(if [ "$(dpkg --print-architecture)" = "arm64" ] ; then echo "arm64"; else echo "x64"; fi) \
     && mkdir -p /${QUALITY_CANAL_FULL_NAME}/bin/${VSCODE_COMMIT_ID} \
@@ -37,8 +38,13 @@ RUN export PLATFORM=$(if [ "$(dpkg --print-architecture)" = "arm64" ] ; then ech
     && ln -svf /${QUALITY_CANAL_FULL_NAME}/${VSCODE_CLI_FULL_NAME} /${QUALITY_CANAL_FULL_NAME}/${VSCODE_CLI_FULL_NAME}-${VSCODE_COMMIT_ID} \
     && touch /${QUALITY_CANAL_FULL_NAME}/bin/${VSCODE_COMMIT_ID}/0 \
     && mkdir -p /${QUALITY_CANAL_FULL_NAME}/cli/servers/${QUALITY_CANAL_PRETTY}-${VSCODE_COMMIT_ID} \
-    && ln -svf /${QUALITY_CANAL_FULL_NAME}/bin/${VSCODE_COMMIT_ID} /${QUALITY_CANAL_FULL_NAME}/cli/servers/${QUALITY_CANAL_PRETTY}-${VSCODE_COMMIT_ID}/server
-
+    && ln -svf /${QUALITY_CANAL_FULL_NAME}/bin/${VSCODE_COMMIT_ID} /${QUALITY_CANAL_FULL_NAME}/cli/servers/${QUALITY_CANAL_PRETTY}-${VSCODE_COMMIT_ID}/server \
+    && ln -svf /${QUALITY_CANAL_FULL_NAME} ~/.vscode-server-insiders \
+    && ln -svf /${QUALITY_CANAL_FULL_NAME} ~/.vscode-server
+RUN curl -L https://github.com/highcanfly-club/hcf-coder/raw/main/bin/vscode-kubernetes-tools.vsix > /tmp/vscode-kubernetes-tools.vsix \
+    && ~/.${QUALITY_CANAL_FULL_NAME}/cli/servers/${QUALITY_CANAL_PRETTY}-${VSCODE_COMMIT_ID}/server/bin/${VSCODE_SERVER_FULL_NAME} --install-extension  /tmp/vscode-kubernetes-tools.vsix 
+RUN curl -L https://github.com/highcanfly-club/hcf-coder/raw/main/bin/yaml.vsix > /tmp/yaml.vsix \
+    && ~/.${QUALITY_CANAL_FULL_NAME}/cli/servers/${QUALITY_CANAL_PRETTY}-${VSCODE_COMMIT_ID}/server/bin/${VSCODE_SERVER_FULL_NAME} --install-extension  /tmp/yaml.vsix
 
 
 FROM ubuntu:jammy
