@@ -1,4 +1,9 @@
-# docker run -it -v./vscode-server-insiders:/vscode-server-insiders 8000:8000 -p2222:22 highcanfly/crontabui
+# docker run -it -p8000:8000 -p2222:22 highcanfly/crontabui
+ARG VSCODE_COMMIT_ID=54b8f6a80aaad7489b75e9293b8d7a1700bed815
+ARG QUALITY_CANAL=insider
+ARG QUALITY_CANAL_PRETTY=Insiders
+ARG VSCODE_CLI_FULL_NAME=code-insiders
+ARG QUALITY_CANAL_FULL_NAME=vscode-server-insiders
 
 FROM ubuntu:jammy as dcronbuilder
 USER root
@@ -14,14 +19,23 @@ RUN git clone https://github.com/eltorio/dcron.git \
 FROM cloudflare/cloudflared as cloudflared
 
 FROM ubuntu:jammy as vscode
-ARG COMMIT_ID=54b8f6a80aaad7489b75e9293b8d7a1700bed815
-ARG QUALITY_CANAL=insider
+ARG VSCODE_COMMIT_ID
+ARG QUALITY_CANAL
+ARG QUALITY_CANAL_FULL_NAME
+ARG QUALITY_CANAL_PRETTY
+ARG VSCODE_CLI_FULL_NAME
 RUN apt-get update -y && DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt install -y --no-install-recommends curl ca-certificates
 RUN export PLATFORM=$(if [ "$(dpkg --print-architecture)" = "arm64" ] ; then echo "arm64"; else echo "x64"; fi) \
-    && mkdir -p /vscode-server-insiders/bin/${COMMIT_ID} \
-    && curl -sSL "https://update.code.visualstudio.com/commit:${COMMIT_ID}/server-linux-${PLATFORM}/${QUALITY_CANAL}" | \
-    tar -xvz -C /vscode-server-insiders/bin/${COMMIT_ID} --strip 1 \
-    && touch /vscode-server-insiders/bin/${COMMIT_ID}/0
+    && mkdir -p /${QUALITY_CANAL_FULL_NAME}/bin/${VSCODE_COMMIT_ID} \
+    && curl -sSL "https://update.code.visualstudio.com/commit:${VSCODE_COMMIT_ID}/server-linux-${PLATFORM}/${QUALITY_CANAL}" | \
+    tar -xvz -C /${QUALITY_CANAL_FULL_NAME}/bin/${VSCODE_COMMIT_ID} --strip 1 \
+    && curl -L   "https://update.code.visualstudio.com/commit:${VSCODE_COMMIT_ID}/cli-linux-${PLATFORM}/${QUALITY_CANAL}" | tar -xvz -C /${QUALITY_CANAL_FULL_NAME}/ \
+    && ln -svf /${QUALITY_CANAL_FULL_NAME}/${VSCODE_CLI_FULL_NAME} /${QUALITY_CANAL_FULL_NAME}/${VSCODE_CLI_FULL_NAME}-${VSCODE_COMMIT_ID} \
+    && touch /${QUALITY_CANAL_FULL_NAME}/bin/${VSCODE_COMMIT_ID}/0 \
+    && mkdir -p /${QUALITY_CANAL_FULL_NAME}/cli/servers/${QUALITY_CANAL_PRETTY}-${VSCODE_COMMIT_ID} \
+    && ln -svf /${QUALITY_CANAL_FULL_NAME}/bin/${VSCODE_COMMIT_ID} /${QUALITY_CANAL_FULL_NAME}/cli/servers/${QUALITY_CANAL_PRETTY}-${VSCODE_COMMIT_ID}/server
+
+
 
 FROM ubuntu:jammy
 
