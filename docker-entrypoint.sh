@@ -57,7 +57,7 @@ EOF
 fi
 
 mkdir -p /run/sshd
-ln -svf /vscode-server-insiders /opt/cron/.vscode-server-insiders
-ln -svf /vscode-server-insiders /opt/cron/.vscode-server
+ln -svf /${QUALITY_CANAL_FULL_NAME} /opt/cron/.vscode-server-insiders
+ln -svf /${QUALITY_CANAL_FULL_NAME} /opt/cron/.vscode-server
 
 supervisord -c /etc/supervisord.conf

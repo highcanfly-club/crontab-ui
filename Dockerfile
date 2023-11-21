@@ -1,12 +1,12 @@
 # © Ronan LE MEILLAT 2023
 # MIT License
 # docker run -it -p8000:8000 -p2222:22 highcanfly/crontabui
-ARG VSCODE_COMMIT_ID=e0b9ba5710060c8a8014f8a12980f011d81fb844
-ARG QUALITY_CANAL=insider
-ARG QUALITY_CANAL_PRETTY=Insiders
-ARG VSCODE_CLI_FULL_NAME=code-insiders
-ARG VSCODE_SERVER_FULL_NAME=code-server-insiders
-ARG QUALITY_CANAL_FULL_NAME=vscode-server-insiders
+ARG VSCODE_COMMIT_ID=1a5daa3a0231a0fbba4f14db7ec463cf99d7768e
+ARG QUALITY_CANAL=stable
+ARG QUALITY_CANAL_PRETTY=Stable
+ARG VSCODE_CLI_FULL_NAME=code
+ARG VSCODE_SERVER_FULL_NAME=code-server
+ARG QUALITY_CANAL_FULL_NAME=vscode-server
 
 FROM ubuntu:jammy as dcronbuilder
 USER root
@@ -53,7 +53,8 @@ ARG QUALITY_CANAL
 ARG QUALITY_CANAL_FULL_NAME
 ARG QUALITY_CANAL_PRETTY
 ARG VSCODE_CLI_FULL_NAME
-ENV   CRON_PATH /opt/cron/crontabs
+ARG VSCODE_SERVER_FULL_NAME
+ENV CRON_PATH /opt/cron/crontabs
 
 RUN   mkdir /crontab-ui
 
@@ -140,10 +141,11 @@ COPY supervisord.conf /etc/supervisord.conf
 COPY --from=dcronbuilder /dcron/crond /usr/sbin/crond
 COPY --from=dcronbuilder /dcron/crontab /usr/bin/crontab
 RUN mkdir -p /etc/cron.d && chown -R 1001 /etc/cron.d && chmod 0755 /usr/sbin/crond
-COPY --from=vscode /vscode-server-insiders /vscode-server-insiders
+COPY --from=vscode /${QUALITY_CANAL_FULL_NAME} /${QUALITY_CANAL_FULL_NAME}
 RUN echo "{\"vscode\":\"${VSCODE_COMMIT_ID}\"}" > /vscode.json
 ENV VSCODE_COMMIT_ID=${VSCODE_COMMIT_ID}
-RUN mkdir -p /vscode-server-insiders
+ENV QUALITY_CANAL_FULL_NAME=${QUALITY_CANAL_FULL_NAME}
+RUN mkdir -p /${QUALITY_CANAL_FULL_NAME}
 RUN 
 EXPOSE $PORT
 ENTRYPOINT [ "/docker-entrypoint.sh" ]
