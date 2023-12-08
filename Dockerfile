@@ -1,7 +1,7 @@
 # © Ronan LE MEILLAT 2023
 # MIT License
 # docker run -it -p8000:8000 -p2222:22 highcanfly/crontabui
-ARG VSCODE_COMMIT_ID=1a5daa3a0231a0fbba4f14db7ec463cf99d7768e
+ARG VSCODE_COMMIT_ID=af28b32d7e553898b2a91af498b1fb666fdebe0c
 ARG QUALITY_CANAL=stable
 ARG QUALITY_CANAL_PRETTY=Stable
 ARG VSCODE_CLI_FULL_NAME=code
@@ -79,7 +79,7 @@ RUN   apt-get update -y && DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt install
       openssh-server openssh-client
       
 ENV NPM_CONFIG_LOGLEVEL info
-ENV NODE_VERSION 20.9.0
+ENV NODE_VERSION 20.10.0
 
 RUN export PLATFORM=$(if [ "$(dpkg --print-architecture)" = "arm64" ] ; then echo "arm64"; else echo "x64"; fi) \
   buildDeps='xz-utils curl ca-certificates gnupg2 lsb-release dirmngr' \
