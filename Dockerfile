@@ -1,7 +1,7 @@
 # © Ronan LE MEILLAT 2023
 # MIT License
 # docker run -it -p8000:8000 -p2222:22 highcanfly/crontabui
-ARG VSCODE_COMMIT_ID=af28b32d7e553898b2a91af498b1fb666fdebe0c
+ARG VSCODE_COMMIT_ID=0ee08df0cf4527e40edc9aa28f4b5bd38bbff2b2
 ARG QUALITY_CANAL=stable
 ARG QUALITY_CANAL_PRETTY=Stable
 ARG VSCODE_CLI_FULL_NAME=code
